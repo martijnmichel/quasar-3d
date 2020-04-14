@@ -1,6 +1,6 @@
 {
   "name": "quasar-app-extension-3d",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A Quasar App Extension",
   "author": "Martijn <info@tocadovision.nl>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "bugs": "",
   "homepage": "",
   "dependencies": {
-    "quasar-ui-3d": "^0.0.2"
+    "quasar-ui-3d": "^0.0.3"
   },
   "engines": {
     "node": ">= 8.9.0",
