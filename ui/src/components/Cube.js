@@ -5,7 +5,7 @@ const _ = require("lodash");
 const uniqid = require("uniqid");
 
 export default {
-  name: "Q3d",
+  name: "QCube",
 
   data() {
     return {

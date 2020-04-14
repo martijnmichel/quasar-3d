@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="row q-col-gutter-xl">
       <div class="col-6">
-        <q-3d hide-arrows>
+        <q-cube hide-arrows>
           <q-card v-for="index in 5" :key="index" class="slide">
             <img src="https://cdn.quasar.dev/img/mountains.jpg" />
 
@@ -16,10 +16,10 @@
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </q-card-section>
           </q-card>
-        </q-3d>
+        </q-cube>
       </div>
       <div class="col-6">
-        <q-3d vertical>
+        <q-cube vertical>
           <q-card class="slide" v-for="index in 10" :key="`s-${index}`">
             <img src="https://cdn.quasar.dev/img/chicken-salad.jpg" />
 
@@ -65,11 +65,11 @@
               </q-btn>
             </q-card-actions>
           </q-card>
-        </q-3d>
+        </q-cube>
       </div>
       <div class="col-6"></div>
       <div class="col-12">
-        <q-3d>
+        <q-cube>
           <q-editor v-model="editor" style="width: 100%" min-height="10rem" />
 
           <q-card flat bordered>
@@ -81,7 +81,7 @@
           <q-card flat bordered>
             <q-card-section v-html="editor" />
           </q-card>
-        </q-3d>
+        </q-cube>
       </div>
     </div>
   </q-page>
@@ -92,7 +92,7 @@ export default {
   data() {
     return {
       stars: 4,
-      editor: "3D animate an <b>editor</b>!"
+      editor: "3d animate an <b>editor</b>!"
     };
   }
 };
