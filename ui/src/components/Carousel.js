@@ -39,26 +39,81 @@ export default {
   methods: {},
 
   render(h) {
-    return (
-      <div
-        id={this.id}
-        style={{ width: this.width }}
-        class={`q-carousel3d--container ${this.hideArrows ? "no-arrows" : ""}`}
-      >
-        <div id={`carousel3d-${this.id}`} class={{ "q-carousel3d": true }}>
-          {this.$slots.default}
-        </div>
-        {!this.hideArrows ? (
-          <div class="controls flex flex-center">
-            <div class="side">
-              <QBtn icon="chevron_left" id={`prev-${this.id}`} flat round />
-            </div>
-            <div class="side">
-              <QBtn icon="chevron_right" id={`next-${this.id}`} flat round />
-            </div>
-          </div>
-        ) : null}
-      </div>
+    let { hideArrows } = this;
+    let { id } = this;
+    let { $slots } = this;
+    let { width } = this;
+    function controls() {
+      if (!hideArrows) {
+        return h(
+          "div",
+          {
+            class: "controls flex flex-center",
+          },
+          [
+            h(
+              "div",
+              {
+                class: "side",
+              },
+              [
+                h(QBtn, {
+                  attrs: {
+                    id: `prev-${id}`,
+                    icon: "chevron_left",
+                    flat: true,
+                    round: true,
+                  },
+                }),
+              ]
+            ),
+            h(
+              "div",
+              {
+                class: "side",
+              },
+              [
+                h(QBtn, {
+                  attrs: {
+                    id: `next-${id}`,
+                    icon: "chevron_right",
+                    flat: true,
+                    round: true,
+                  },
+                }),
+              ]
+            ),
+          ]
+        );
+      }
+    }
+
+    return h(
+      "div",
+
+      {
+        class: `q-carousel3d--container ${hideArrows ? "no-arrows" : ""}`,
+        attrs: {
+          id: id,
+        },
+        style: {
+          width: width,
+        },
+      },
+
+      [
+        h(
+          "div",
+          {
+            class: "q-carouse3d",
+            attrs: {
+              id: `carousel3d-${id}`,
+            },
+          },
+          $slots.default
+        ),
+        controls(),
+      ]
     );
   },
 
