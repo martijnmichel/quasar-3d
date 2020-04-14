@@ -1,0 +1,29 @@
+.q-shape--container
+  position: relative
+  .side
+    display: flex
+    width: 64px
+    > *
+      margin-top: auto
+      margin-bottom: auto
+      margin-left: 12px
+      margin-right: 12px
+
+  .q-shape
+    position: relative
+    box-sizing: border-box
+    display: block
+    height: 100%
+    min-height: 100%
+    width: calc(100% - 128px)
+    > *
+      left: 0
+      top: 0
+      height: 100%
+      width: 100%
+      box-sizing: border-box
+      display: inline-block
+
+  &.no-arrows
+    .q-shape
+      width: 100%
