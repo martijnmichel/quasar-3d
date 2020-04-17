@@ -260,8 +260,8 @@ export default {
             console.log(items);
 
             TweenMax.to(slide.el, 0.7, {
-              z: Math.sin(slide.prevRotationY) * 100,
-              x: Math.sin(slide.prevRotationY) * 100,
+              z: Math.sin(slide.prevRotationY) + 100,
+              x: Math.sin(slide.prevRotationY) + 100,
             });
           },
         });
