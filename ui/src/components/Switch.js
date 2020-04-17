@@ -93,12 +93,21 @@ export default {
 
     function items() {
       return $slots.default.map((node, index) => {
-        node.data.on = {
-          click: () => {},
-          mouseenter: () => {},
-          mouseleave: () => {},
-        };
-        return node;
+        console.log(node);
+        return h(
+          "div",
+          {
+            class: "album",
+          },
+          [
+            node,
+            h("div", { class: "right" }),
+            h("div", { class: "left" }),
+            h("div", { class: "top" }),
+            ,
+            h("div", { class: "bottom" }),
+          ]
+        );
       });
     }
 
@@ -124,7 +133,7 @@ export default {
               id: `switch3d-${id}`,
             },
           },
-          items()
+          $slots.default
         ),
         controls(),
       ]
@@ -195,6 +204,7 @@ export default {
       let y = [];
       let tl = new TimelineMax({
         repeat: -1,
+        smoothChildTiming: true,
       });
 
       //tl.pause();
@@ -233,14 +243,16 @@ export default {
               console.log("active item found");
               TweenMax.to(activeItem.el, 0.2, {
                 x: 0,
-                transform: activeItem.prevTransform,
+                z: 0,
+
+                rotationY: activeItem.prevRotationY,
               });
               activeItem.active = false;
             }
 
             transformMap = _.each(items, (slide) => {
               if (!slide.active)
-                slide.prevTransform = gsap.getProperty(slide.el, "transform");
+                slide.prevRotationY = gsap.getProperty(slide.el, "rotationY");
             });
 
             tl.pause();
@@ -248,10 +260,8 @@ export default {
             console.log(items);
 
             TweenMax.to(slide.el, 0.7, {
-              css: {
-                x: 200,
-                rotationY: 0,
-              },
+              z: Math.sin(slide.prevRotationY) * 100,
+              x: Math.sin(slide.prevRotationY) * 100,
             });
           },
         });
