@@ -43,9 +43,7 @@ export default {
       return $slots.default.map((node, index) => {
         console.log(node);
         node.data.on = {
-          click: () => {
-            console.log("CLICK: " + index);
-          },
+          click: () => {},
           mouseenter: () => {
             $slots.default.forEach((sibling) => {
               if (sibling !== node) {

@@ -1,25 +1,20 @@
-body, html
-  overflow-x: hidden
-.q-carousel3d--container
+.q-switch3d--container
   width: 100%
   height: auto
   -webkit-font-smoothing: antialiased
-  margin: auto
-  display: inline-block
   .controls
     margin-top: 10px
-  .q-carousel3d
+  .q-switch3d
     position: relative
     box-sizing: border-box
     display: block
     height: 100%
     min-height: 100%
-    width: 90%
     margin: auto
     > *
       left: 0
       top: 0
-      height: 100%
+      height: auto
       width: 100%
       box-sizing: border-box
       display: inline-block
@@ -27,7 +22,3 @@ body, html
   &.no-arrows
     .q-shape
       width: 100%
-
-@media (min-width: 600px)
-  .q-carousel3d
-    width: 60%

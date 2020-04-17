@@ -10,7 +10,7 @@ export default {
 
   data() {
     return {
-      test: "sdf",
+      nextFn: undefined,
       id: uniqid(),
     };
   },
@@ -34,6 +34,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    autoplay: {
+      type: Boolean,
+      default: false,
+    },
+    speed: {
+      type: Number,
+      default: 5,
+    },
   },
 
   methods: {},
@@ -43,6 +51,7 @@ export default {
     let { id } = this;
     let { $slots } = this;
     let { width } = this;
+
     function controls() {
       if (!hideArrows) {
         return h(
@@ -96,18 +105,18 @@ export default {
         attrs: {
           id: id,
         },
-        style: {
-          width: width,
-        },
       },
 
       [
         h(
           "div",
           {
-            class: "q-carouse3d",
+            class: "q-carousel3d",
             attrs: {
               id: `carousel3d-${id}`,
+            },
+            style: {
+              maxWidth: width,
             },
           },
           $slots.default
@@ -117,35 +126,57 @@ export default {
     );
   },
 
+  beforeDestroy() {
+    gsap.ticker.remove(this.nextFn);
+  },
+
   mounted() {
-    //var $wrapper = document.getElementById(this.id);
+    let m = 0; // autoplay counter
+    const { vertical } = this;
+    var $wrapper = document.getElementById(this.id);
     var $qshape = document.getElementById(`carousel3d-${this.id}`);
     var $slides = $qshape.childNodes;
-    console.log($slides);
 
     // set the height of the container
-    $qshape.style.height =
-      parseInt($slides[0].getBoundingClientRect().height) + "px";
 
     var $container = $qshape;
     var $containerWidth = $container.offsetWidth;
-    var $containerHeight = parseInt($slides[0].getBoundingClientRect().height);
+    var $containerHeight = 0;
 
-    _.each($slides, (slide) => (slide.style.position = "absolute"));
+    _.each($slides, (slide) => {
+      let height = parseInt(slide.getBoundingClientRect().height);
+      console.log(height);
+      if (height > $containerHeight) $containerHeight = height;
+      slide.style.position = "absolute";
+    });
+    $qshape.style.height = $containerHeight + "px";
 
     TweenLite.set($qshape, {
       css: {
-        perspective: $containerWidth * 1.5,
+        perspective: !vertical ? $containerWidth : $containerHeight,
         transformStyle: "preserve-3d",
       },
     });
 
+    let margin = ($slides.length / Math.PI) * ($containerHeight / 3);
+    console.log(margin);
+
+    TweenLite.set($wrapper, {
+      css: {
+        marginTop: vertical ? `${margin}px` : null,
+        marginBottom: vertical ? `${margin}px` : null,
+      },
+    });
+
     $slides.forEach(function (element, index) {
-      console.log(index);
       TweenLite.set(element, {
         css: {
-          transformOrigin: "50% 50% -" + $slides.length * ($containerWidth / 5),
-          rotationY: (index * 360) / $slides.length,
+          transformOrigin:
+            "50% 50% -" +
+            $slides.length *
+              (vertical ? $containerHeight / 5 : $containerWidth / 5),
+          rotationY: !vertical ? (index * 360) / $slides.length : 0,
+          rotationX: vertical ? (index * 360) / $slides.length : 0,
         },
       });
       /*
@@ -161,19 +192,27 @@ export default {
 
     const rotationSnap = (360 / $slides.length) * 4;
     let xDrag = 0;
+    let yDrag = 0;
 
     function snap(x) {
       return Math.round(x / rotationSnap) * rotationSnap;
+    }
+
+    function rotateItem(index, val) {
+      return (index * 360) / $slides.length + snap(val) / 4;
     }
 
     document
       .getElementById(`prev-${this.id}`)
       .addEventListener("click", function () {
         xDrag += rotationSnap;
+        yDrag += rotationSnap;
+        m = 0; // autoplay counter
         $slides.forEach(function (element, index) {
           TweenMax.to(element, 0.3, {
             css: {
-              rotationY: (index * 360) / $slides.length + snap(xDrag) / 4,
+              rotationY: !vertical ? rotateItem(index, xDrag) : 0,
+              rotationX: vertical ? rotateItem(index, yDrag) : 0,
             },
           });
         });
@@ -183,37 +222,83 @@ export default {
       .getElementById(`next-${this.id}`)
       .addEventListener("click", function () {
         xDrag -= rotationSnap;
+        yDrag -= rotationSnap;
+        m = 0; // autoplay counter
         $slides.forEach(function (element, index) {
           TweenMax.to(element, 0.3, {
             css: {
-              rotationY: (index * 360) / $slides.length + snap(xDrag) / 4,
+              rotationY: !vertical ? rotateItem(index, xDrag) : 0,
+              rotationX: vertical ? rotateItem(index, yDrag) : 0,
             },
           });
         });
       });
 
+    if (this.autoplay) {
+      gsap.ticker.add(next);
+      gsap.ticker.fps(60);
+    }
+
+    const { speed } = this;
+    function next() {
+      m++;
+      if (m === speed * 60) {
+        xDrag -= rotationSnap;
+        yDrag -= rotationSnap;
+        $slides.forEach(function (element, index) {
+          TweenMax.to(element, 0.3, {
+            css: {
+              rotationY: !vertical ? rotateItem(index, xDrag) : 0,
+              rotationX: vertical ? rotateItem(index, yDrag) : 0,
+            },
+          });
+        });
+        m = 0;
+      }
+    }
+
+    this.nextFn = next;
+
+    $container.addEventListener("mouseenter", (event) => {
+      m = 0;
+      gsap.ticker.remove(next);
+      this.nextFn = next;
+    });
+    $container.addEventListener("mouseleave", (event) => {
+      m = 0;
+      gsap.ticker.add(next);
+      this.nextFn = next;
+    });
+
     Draggable.create(document.createElement("div"), {
       trigger: $container,
       onDragEnd: function () {
         let { x } = this;
+        let { y } = this;
+        m = 0; // autoplay counter
         $slides.forEach(function (element, index) {
           TweenMax.to(element, 0.3, {
             css: {
-              rotationY: (index * 360) / $slides.length + snap(x) / 4,
+              rotationY: !vertical ? rotateItem(index, xDrag) : 0,
+              rotationX: vertical ? rotateItem(index, yDrag) : 0,
             },
           });
         });
       },
 
-      type: "x",
+      type: vertical ? "y" : "x",
       onDrag: function () {
         const x = this.x;
+        const y = this.y;
         xDrag = x;
+        yDrag = y;
+        m = 0; // autoplay counter
         const { getDirection } = this;
         $slides.forEach(function (element, index) {
           TweenMax.set(element, {
             css: {
-              rotationY: (index * 360) / $slides.length + x / 4,
+              rotationY: !vertical ? (index * 360) / $slides.length + x / 4 : 0,
+              rotationX: vertical ? (index * 360) / $slides.length + y / 4 : 0,
             },
           });
         });
